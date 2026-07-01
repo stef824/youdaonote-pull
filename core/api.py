@@ -43,7 +43,7 @@ class YoudaoNoteApi(object):
         self.cookies_path = (
             cookies_path
             if cookies_path
-            else os.path.join(get_script_directory(), "cookies.json")
+            else os.path.join(get_script_directory(), "cookies.txt")
         )
         self.cstk = None
 
@@ -56,13 +56,11 @@ class YoudaoNoteApi(object):
             cookies = self._covert_cookies()
         except Exception as err:
             return format(err)
-        for cookie in cookies:
+        for k,v in cookies.items():
             self.session.cookies.set(
-                name=cookie[0], value=cookie[1], domain=cookie[2], path=cookie[3]
+                name=k, value=v, domain='.note.youdao.com', path='/'
             )
-        self.cstk = (
-            cookies[0][1] if cookies[0][0] == "YNOTE_CSTK" else None
-        )  # cstk 用于请求时接口验证
+        self.cstk = cookies.get('YNOTE_CSTK')  # cstk 用于请求时接口验证
         if not self.cstk:
             return "YNOTE_CSTK 字段为空"
 
@@ -72,12 +70,19 @@ class YoudaoNoteApi(object):
         :return: cookies
         """
         with open(self.cookies_path, "rb") as f:
-            json_str = f.read().decode("utf-8")
+            cookie_str = f.read().decode("utf-8")
 
+        cookies = {}
         try:
-            cookies_dict = json.loads(json_str)  # 将字符串转换为字典
-            cookies = cookies_dict["cookies"]
-        except Exception:
+            cookies_item = cookie_str.split(';')
+            for item in cookies_item:
+                item = item.strip()
+                if item:
+                    cookie = item.split('=')
+                    cookies[cookie[0]] = cookie[1]
+            print(cookies)
+        except Exception as err:
+            print(err)
             raise Exception("转换「{}」为字典时出现错误".format(self.cookies_path))
         return cookies
 

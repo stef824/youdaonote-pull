@@ -36,56 +36,17 @@ cd youdaonote-pull
 
 #### 2、安装 [Python3](https://www.python.org/downloads/)、安装依赖模块（包）
 
-- 可根据 [廖雪峰 Python 教程](https://www.liaoxuefeng.com/wiki/1016959663602400/1016959856222624) 安装，如果 pull 遇到[此错误](https://github.com/DeppWang/youdaonote-pull/issues/137)，请安装 Python 3.11.7（可使用 pyenv）， 测试是否安装成功
-
-```shell
-python3 --version  # macOS/Linux
-python --version   # Windows
-```
+- 安装[uv](https://docs.astral.sh/uv/getting-started/installation/)
 
 - 安装依赖包
 
 ```shell
-# macOS
-sudo easy_install pip3      # 安装 Python3 Package Installer
-python3 -m venv venv        # 使用虚拟环境
-. venv/bin/activate         # 激活虚拟环境
-sudo pip3 install -r requirements.txt
+uv sync
 ```
-```shell
-# Windows
-python -m venv venv         # 使用虚拟环境
-. venv/bin/activate         # 激活虚拟环境
-pip install -r requirements.txt
 
-# 有问题可参考 https://www.liaoxuefeng.com/wiki/1016959663602400/1017493741106496
-```
-#### 3、设置登录 `Cookies` 文件 `cookies.json`
+#### 3、设置登录 `Cookies` 文件 `cookies.txt`
 
-```json
-{
-    "cookies": [
-        [
-            "YNOTE_CSTK",
-            "**",
-            ".note.youdao.com",
-            "/"
-        ],
-        [
-            "YNOTE_LOGIN",
-            "**",
-            ".note.youdao.com",
-            "/"
-        ],
-        [
-            "YNOTE_SESS",
-            "**",
-            ".note.youdao.com",
-            "/"
-        ]
-    ]
-}
-```
+浏览器登录有道云，F12页面复制Cookies到cookies.txt
 
 由于有道云笔记登录升级，加了图形验证吗。**目前脚本不能使用账号密码登录，只能使用 `Cookies` 登录。**
 
@@ -98,33 +59,6 @@ pip install -r requirements.txt
 3. 复制对应数据替换  `**`
 
 ![image.png](https://s2.loli.net/2022/04/04/N47KPEaSGvCpsfX.png)
-
-示例：
-
-```json
-{
-    "cookies": [
-        [
-            "YNOTE_CSTK",
-            "rR_Pejz0",
-            ".note.youdao.com",
-            "/"
-        ],
-        [
-            "YNOTE_LOGIN",
-            "3||1649054441155",
-            ".note.youdao.com",
-            "/"
-        ],
-        [
-            "YNOTE_SESS",
-            "v2|BdllbnwfaWl5RMUWOfqZ0gShf***6LqFRqB0MYfh4JLR",
-            ".note.youdao.com",
-            "/"
-        ]
-    ]
-}
-```
 
 - 提示：脚本完全本地运行，不用担心你的 `Cookies` 泄露
 
@@ -144,7 +78,7 @@ pip install -r requirements.txt
 * `local_dir`：选填，本地存放导出文件的文件夹（绝对路径），不填则默认为当前文件夹
 * `ydnote_dir`：选填，有道云笔记指定导出文件夹名，不填则导出所有文件
 * `smms_secret_token`：选填， [SM.MS](https://sm.ms) 的 `Secret Token`（注册后 -> Dashboard -> API Token），用于上传笔记中有道云图床图片到 SM.MS 图床，不填则只下载到本地（`youdaonote-images` 文件夹），`Markdown` 中使用本地链接
-* `is_relative_path`：选填，在 MD 文件中图片 / 附件是否采用相对路径展示，不填或 false 为绝对路径，true 为相对路径    
+* `is_relative_path`：选填，在 MD 文件中图片 / 附件是否采用相对路径展示，不填或 false 为绝对路径，true 为相对路径
 
 示例：
 
@@ -171,8 +105,7 @@ pip install -r requirements.txt
 ###  二、运行导出脚本
 
 ```shell
-python3 pull.py  # macOS/Linux
-python pull.py   # Windows
+uv run pull.py
 ```
 
 效果：
@@ -184,8 +117,7 @@ python pull.py   # Windows
 多次导出时，同样使用以下命令：
 
 ```shell
-python3 pull.py  # macOS/Linux
-python pull.py   # Windows
+uv run pull.py
 ```
 
 根据有道云笔记文件最后修改时间是否大于本地文件最后修改时间来判断是否需要更新。再次导出时，只会导出有道云笔记上次导出后新增、修改或未导出的笔记，不会覆盖本地已经修改的文件。**但有道云笔记和本地不要同时修改同一个文件，这样可能会导致本地修改丢失**！
@@ -209,7 +141,7 @@ python pull.py   # Windows
 
 - [YoudaoNoteExport](https://github.com/wesley2012/YoudaoNoteExport)
 
-## 出发点 
+## 出发点
 
 原来一直是有道云笔记的忠实用户，后面接触到了「所见即所得」的 [Typora](https://typora.io/)，有点用不惯有道云笔记了，想着有什么法子能电脑本地文件和有道云笔记同步，这样电脑使用 Typora，手机使用有道云笔记。发现有道云笔记有 [Open API](http://note.youdao.com/open/developguide.html) ，打算利用提供的 API，写两个脚本，一个 pull 所有文件到本地，一个 push 本地文件到云笔记。但 API 太难用了，N 多年没更新了，问客服也没更新的意思，开发到最后发现竟然没有 Markdown 文件的接口，醉了。遂放弃。
 
